@@ -1,0 +1,526 @@
+\documentclass[11pt]{amsart}
+ \usepackage[french]{babel}
+ \frenchbsetup{og=«,fg=»}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\usepackage[ddmmyyyy]{datetime}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\definecolor{bgcollst1}{rgb}{0.95,0.95,0.95}
+\definecolor{bgcollst2}{rgb}{0.7,0.7,0.7}
+\lstset{inputencoding=utf8/latin1}
+\lstset{literate={œ}{{\oe}}1}
+%\lstset{numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=5pt}
+\lstset{
+	inputencoding=latin1,
+	language=python,
+	morekeywords={append, as, extend, insert, sort, remove, reverse, keys, values, items, write, close, read, with, self, cls, time copy, dtype, yield, match, case},
+	basicstyle=\scriptsize\ttfamily,
+	showstringspaces=false,
+	framexleftmargin=1mm,
+	framexrightmargin=1mm,
+	framextopmargin=1mm,
+	framexbottommargin=1mm,
+	tabsize=2,
+	backgroundcolor=\color{bgcollst1},
+	frame=shadowbox,
+	framerule=0.5pt,
+	framesep=0.5pt,
+	rulesep=1pt,
+	fillcolor=\color{black},
+	rulecolor=\color{black},
+	rulesepcolor=\color{bgcollst2},
+	keywordstyle=\color{black}\bfseries\underbar,
+}
+ \lstset{%
+	inputencoding=utf8,
+	extendedchars=true,
+	literate=%
+		{é}{{\'e}}{1}%
+		{è}{{\`e}}{1}%
+		{à}{{\`a}}{1}%
+		{ç}{{\c{c}}}{1}%
+		{œ}{{\oe}}{1}%
+		{ù}{{\`u}}{1}%
+		{É}{{\'E}}{1}%
+		{È}{{\`E}}{1}%
+		{À}{{\`A}}{1}%
+		{Ç}{{\c{C}}}{1}%
+		{Œ}{{\OE}}{1}%
+		{Ê}{{\^E}}{1}%
+		{ê}{{\^e}}{1}%
+		{î}{{\^i}}{1}%
+		{ï}{{\"{\i}}}{1}%
+		{ô}{{\^o}}{1}%
+		{û}{{\^u}}{1}%
+		{ë}{{\¨{e}}}1
+		{û}{{\^{u}}}1
+		{â}{{\^{a}}}1
+		{Â}{{\^{A}}}1
+		{Î}{{\^{I}}}1
+		{Ï}{{\"{\I}}}{1}
+		{·}{{\textperiodcentered}}{1}	
+		{²}{{\texttwosuperior}}{1}
+		{³}{{\textthreesuperior}}{1}
+}
+\newcommand{\N}{\mathbf{\mathds{N}}}
+\newcommand{\Z}{\mathbf{\mathds{Z}}}
+\newcommand{\Q}{\mathbf{\mathds{Q}}}
+\newcommand{\R}{\mathbf{\mathds{R}}}
+\newcommand{\COMPLEX}{\mathbf{\mathds{C}}}
+\newcommand{\K}{\mathbf{\mathds{K}}}
+
+\newcommand{\ds}{\displaystyle}
+\newcommand{\mb}[1]{\mathbf{#1}}
+\newcommand{\vb}[1]{\mathbf{#1}}
+
+\interfootnotelinepenalty=5000
+\widowpenalty=10000
+\clubpenalty=10000
+\hyphenpenalty=10000
+\uchyph=0
+\thinmuskip=1mu
+\delimiterfactor=950
+\raggedbottom
+\tolerance=1
+\emergencystretch=\maxdimen
+\setlength\parindent{0pt}
+
+\title{R\'esolution de l'\'equation cubique par la m\'ethode de Strobach (Python, C++)}
+\author{Peter Philippe}
+%\date{\today}
+
+\begin{document}
+\maketitle
+
+L'article \og Solving cubics by polynomial fitting \fg{} \'ecrit par Peter Strobach et publi\'e en 2011 dans \textit{Journal of Computational and Applied Mathematics}\footnote{https://www.sciencedirect.com/science/article/pii/S0377042710006758},
+pr\'esente un algorithme performant pour la r\'esolution de l'\'equation cubique unitaire~:
+$$\ds \mathcal{P}(x) = \prod_{i=1}^{3} (x-x_{i}) = (x-x_{1})(x-x_{2})(x-x_{3})= x^3 + ax^2 + bx + c = 0$$
+La m\'ethode s'appuie sur une approche hybride permettant de d\'ecomposer cette \'equation via un produit de facteurs, un lin\'eaire et un quadratique (dont le
+r\^ole sera crucial pour les racines complexes et les racines r\'eelles multiples). Cela permet d'accro\^{\i}tre consid\'erablement la pr\'ecision des racines
+obtenues et rend cette m\'ethode plus efficace que les m\'ethodes existantes, comme celle de Girolamo Cardano notamment et m\^eme par rapport \`a la m\'ethode
+de Bairstow (bien que cette derni\`ere ne soit pas cantonn\'ee au degr\'e~3). Elle montre \'egalement sa sup\'eriorit\'e dans les cas o\`u les racines sont tr\`es
+dispers\'ees, ou inversement, lorsqu'elles sont tr\`es rapproch\'ees. Ces quelques pages proposent un r\'esum\'e assez simplifi\'ee de la publication originale
+en ne reprenant que les grandes lignes, certains d\'etails n'y figureront donc pas, il faudra alors se reporter \`a la publication originale t\'el\'echargeable librement
+\`a l'adresse cit\'ee au bas de cette page.\\
+
+Tout d'abord, il est n\'ecessaire de factoriser l'\'equation cubique telle que~$\mathcal{P}(x) = x^3 + ax^2 + bx + c = (x^2 + \alpha{}x + \beta)(x+\gamma)$,
+avec~$a = \alpha+\gamma$, $b = \beta + \alpha\gamma$ et $c = \beta \gamma$ o\`u $\alpha$, $\beta$ et $\gamma$ sont des inconnues.\\
+
+Cette factorisation devient sous forme matricielle
+$$\begin{pmatrix} 1 \\ a \\ b \\ c \end{pmatrix} = \begin{pmatrix} 1 & & \\ \gamma & 1 & \\ & \gamma & 1 \\ & & \gamma \end{pmatrix}\begin{pmatrix} 1 \\ \alpha \\ \beta \end{pmatrix}$$
+Puis, un vecteur d'ajustement $\vb{e}$ d'ordre 3 est cr\'e\'e~:
+$$\vb{e} = \begin{pmatrix} e_1 \\ e_2 \\ e_3 \end{pmatrix} = \begin{pmatrix} a \\ b \\ c \end{pmatrix} - \begin{pmatrix} \gamma & 1 & 0 \\ 0 & \gamma & 1 \\ 0 & 0 & \gamma \end{pmatrix}\begin{pmatrix} 1 \\ \alpha \\ \beta \end{pmatrix}$$
+La matrice jacobienne~$\mb{F}$ de ce syst\`eme est~:
+$$\mb{F} = \begin{pmatrix} \dfrac{\partial}{\partial\alpha}\vb{e} & \dfrac{\partial}{\partial\beta}\vb{e} & \dfrac{\partial}{\partial\gamma}\vb{e} \end{pmatrix}^{\textsc{T}} = -\begin{pmatrix} 1 & 0 & 1 \\ \gamma & 1 & \alpha  \\ 0 & \gamma & \beta \end{pmatrix}$$
+Les trois inconnues sont repr\'esent\'ees via un vecteur~$\vb{p} = \begin{pmatrix} \alpha & \beta & \gamma \end{pmatrix}^{\textsc{T}}$. Apr\`es un
+d\'eveloppement avec la s\'erie de Taylor afin d'estimer l'erreur, conjugu\'e \`a diverses op\'erations, l'auteur arrive au syst\`eme lin\'eaire suivant~:
+$$-\mb{F}\vb{\delta} = \vb{e}$$
+avec
+$\vb{\delta} = \begin{pmatrix} \delta_1 \\ \delta_2 \\ \delta_3 \end{pmatrix}$ un vecteur dont le r\^ole sera de mettre \`a jour les inconnues $\alpha$, $\beta$ et~$\gamma$.
+La factorisation LU de la matrice jacobienne permet d'introduire deux nouveaux param\`etres~:
+$$-\mb{F} = \begin{pmatrix} 1 & 0 & 0 \\ \gamma & 1 & \alpha \\ 0 & \gamma & \beta \end{pmatrix} = \begin{pmatrix} 1 & 0 & 0 \\ \gamma & 1 & 0  \\ 0 & \gamma & 1 \end{pmatrix}\begin{pmatrix}1 & 0 & 1 \\ 0 & 1 & u_1 \\ 0 & 0 & u_2\end{pmatrix}$$
+avec $u_1=\alpha-\gamma$ et $u_2=\beta - \gamma{}u_1$.\\
+
+La r\'esolution du premier syst\`eme matriciel $-\mb{F}\mathbf{\delta} = \vb{e}$ issu de la factorisation am\`ene \`a~:
+$$\begin{pmatrix} 1 & 0 & 0 \\ \gamma & 1 & 0  \\ 0 & \gamma & 1 \end{pmatrix}\begin{pmatrix} q_1 \\ q_2 \\ q_3 \end{pmatrix}=\begin{pmatrix} e_1 \\ e_2 \\ e_3 \end{pmatrix}$$
+d'o\`u
+\[
+\begin{split}
+	q_1 &= e_1 \\
+	q_2 &= e_2 - \gamma{}q_1 \\
+	q_3 &= e_3 - \gamma{}q_2
+\end{split}
+\]
+Le second syst\`eme lin\'eaire est alors~:
+$$\begin{pmatrix} 1 & 0 & 1 \\ 0 & 1 & u_1 \\ 0 & 0 & u_2 \end{pmatrix}\begin{pmatrix} \delta_1 \\ \delta_2 \\ \delta_3 \end{pmatrix}=\begin{pmatrix} q_1 \\ q_2 \\ q_3 \end{pmatrix}$$
+Sa r\'esolution am\`ene \`a obtenir les coefficients du vecteur $\vb{\delta}$~:
+\[
+\begin{split}
+\delta_3 &= q_3 / u_2 \\
+\delta_2 &= q_2 - u_1\delta_3 \\
+\delta_1 &= q_1 - \delta_3
+\end{split}
+\]
+Ceci permet de mettre-\`a-jour les r\'eels $\alpha$, $\beta$ et $\gamma$ des deux facteurs (lin\'eaire et quadratique) comme cela a \'et\'e mentionn\'e plus haut~:
+\[
+\begin{split}
+\alpha &= \alpha + \delta_1 \\
+\beta &= \beta + \delta_2 \\
+\gamma &= \gamma + \delta_3
+\end{split}
+\]
+Compl\'etant ainsi l'ossature de cet algorithme. Toute \'equation de degr\'e impair et \`a coefficients r\'eels poss\`ede au moins une racine r\'eelle\footnote{Ceci peut se prouver avec, entre autres, le Th\'eor\`eme des Valeurs Interm\'ediaires (alias le \textit{TVI}),
+mais plus simplement en imaginant le fait qu'une valeur positive \'elev\'ee au cube reste positive et qu'une valeur n\'egative \'egalement \'elev\'ee au cube restera n\'egative, la fonction en question devra alors intersecter l'axe des abscisses au moins une fois pour \'etre \'evalu\'ee.},
+celle-ci est estim\'ee par $\gamma = - \hat{x}_{3}$, puis les initialisations suivantes sont effectu\'ees~$\alpha = a - \gamma$, $\beta = b - \gamma\alpha$ et~$e_{3} = c - \gamma\beta$ de mani\`ere \`a annuler $e_{1}$,
+$e_{2}$ et $e_{3}$. Les initialisations suivantes sont d\'eriv\'ees de la m\'ethode de Cardano~ $Q = \frac{a^{2} - 3b}{9}$ et~$R = \frac{2a^3-9ab+27c}{54}$, si la condition~$R^{2}<Q^{3}$ est v\'erifi\'ee on pose~$\Theta=\arccos\left(\frac{R}{Q^{3/2}}\right)$
+permettant ainsi d'obtenir une premi\`ere approximation pour $\hat{x}_{3}=-2\sqrt{Q}\cos\left(\frac{\Theta}{3}\right) - \frac{a}{3}$, maintenant si la condition n'est pas v\'erifi\'ee, on pose~$A=-\text{signe}(R)\left(|R|+\sqrt{R^{2}-Q^{3}}\right)^{1/3}$
+puis~$B = Q/A$ (ou bien~$B=0$ si $A=0$), dans ce cas~$\hat{x}_{3}$ sera \'egal \`a~$\hat{x}_{3}=A+B-\frac{a}{3}$.\\
+
+De $\mathcal{P}(x)=(x^2 + \alpha{}x + \beta)(x+\gamma)$ avec $\alpha=-(x_{1}+x_{2})$, $\beta=x_{1}x_{2}$ et $\gamma=-x_{3}$, l'auteur encha\^ine avec une s\'erie d'op\'erations
+permettant de traiter le cas des racines multiples (donc ici double et triple) afin d'aboutir finalement au d\'eterminant de la matrice $-\mb{F}$~:
+$$|-\mb{F}| = x_{1}^{2}+x_{3}^{2}-2x_{1}x_{3}$$
+Car pour une \'equation cubique, trois cas peuvent se pr\'esenter selon la valeur du discriminant (trois racines r\'eelles simples, une racine r\'eelle triple et enfin une racine r\'eelle simple et deux
+racines complexes conjugu\'ees).\\
+
+D\'efinissons ensuite les c\'el\`ebres relations de Vi\`ete pour notre \'equation cubique unitaire~:
+\[
+\begin{split}
+a &= -x_{1}-x_{2}-x_{3}\\
+b &=  x_{1}x_{2}+x_{1}x_{3}+x_{2}x_{3}\\
+c &= -x_{1}x_{2}x_{3}
+\end{split}
+\]
+Apr\`es diff\'erentes substitutions, l'auteur construit une \'equation quadratique en $x_{2}$
+$$x_{2}^{2}+\frac{2a}{3}x_{2}+\frac{b}{3}=0$$
+dont les solutions pour $x_{2}$ sont
+$$x_{2}^{(1)} = - \frac{1}{3}\left(a + \text{signe}(a)\sqrt{a^{2}-3b}\right) \quad \text{et} \quad x_{2}^{(2)} = \frac{b}{3x_{2}^{(1)}}$$
+et pour $x_{1}$~:
+$$x_{1}^{(1)} = -a - 2x_{2}^{(1)} \quad \text{et} \quad x_{1}^{(2)} = -a - 2x_{2}^{(2)}$$
+Seulement voil\`a, le discriminant n\'ecessite l'emploi d'une valeur comme $x_{1}^{(1)}\left(x_{2}^{(1)}\right)^{2}$ ce qui n'est pas souhaitable.
+Ceci est contourn\'e par l\'elaboration de deux discriminants~:
+$$\Delta_{1} = c + \frac{(6b - 2a^{2}x_{2}^{(1)}) - ab}{9} \quad \text{et} \Delta_{1} = c + \frac{(6b - 2a^{2}x_{2}^{(2)}) - ab}{9}\quad$$
+La d\'etection d'une racine triple induit $a=-3x_{1}$, $b=3x_{1}^{2}$, $c=-x_{1}^{3}$, elle est alors d\'eduite de $a$ par~$x_{1} = -\frac{a}{3}$.\\
+
+L'auteur propose dans son article une impl\'ementation en langage Fortran de son algorithme. Les impl\'ementations perfectibles donn\'ees ici le sont pour
+les langages C++ et Python, elles restent fid\`eles au code original. Des exemples identiques sont donn\'ees dans les pages qui suivent pour les deux langages~:
+\begin{lstlisting}
+#include <array>
+#include <cmath>
+#include <complex>
+#include <format>
+#include <expected>
+#include <print>
+#include <string>
+#include <cstdlib>
+
+void fitcs(double a, double b, double c, std::array<std::complex<double>, 3>& x) {
+    const auto ap = a * a;
+    const auto qq = (ap - 3.0 * b) / 9.0;
+    const auto rr = (a * (2.0 * ap - 9.0 * b) + 27.0 * c) / 54.0;
+    const auto qq3 = qq * qq * qq;
+    const auto rr2 = rr * rr;
+    const double inv3 = 1.0 / 3.0;
+    double gamma;
+
+    if (rr2 < qq3) {
+        const auto theta = std::acos(rr / std::pow(qq, 1.5));
+        const auto cos1 = std::cos(theta * inv3);
+        gamma = std::fma(2.0 * std::sqrt(qq), cos1, a * inv3);
+    } else {
+        const auto aa = -std::copysign(std::pow(std::abs(rr) \
+                        + std::sqrt(rr2 - qq3), inv3), rr);
+        const auto bb = (aa == 0.0) ? 0.0 : qq / aa;
+        gamma = -aa - bb + a * inv3;
+    }
+
+    double ee = 0.0;
+    double alpha = a - gamma;
+    double beta = b - alpha * gamma;
+    double e1 = 0.0, e2 = 0.0, e3 = c - gamma * beta;
+
+    for (int k = 0; k < 16; ++k) {
+        double eee = ee;
+        double eeee = eee;
+        double u1 = alpha - gamma;
+        double u2 = beta - gamma * u1;
+        double q1 = e1;
+        double q2 = e2 - gamma * q1;
+        double q3 = e3 - gamma * q2;
+        double delta3 = (u2 == 0.0) ? 0.0 : q3 / u2;
+        double delta2 = q2 - u1 * delta3;
+        double delta1 = q1 - delta3;
+
+        alpha += delta1;
+        beta += delta2;
+        gamma += delta3;
+
+        e1 = a - gamma - alpha;
+        e2 = b - alpha * gamma - beta;
+        e3 = c - gamma * beta;
+
+        ee = std::fma(e1, e1, std::fma(e2, e2, e3 * e3));
+        if (ee == 0.0 || ee == eee || ee == eeee)
+            break;
+    }
+
+    const auto cc1 = alpha * 0.5;
+    double diskr = std::fma(cc1, cc1, -beta);
+
+    if (diskr >= 0.0) {
+        diskr = std::sqrt(diskr);
+        x[0] = {-cc1 - diskr, 0.0};
+        x[1] = {beta / x[0].real(), 0.0};
+    } else {
+        diskr = std::sqrt(-diskr);
+        x[0] = {-cc1, diskr};
+        x[1] = {-cc1, -diskr};
+    }
+
+    x[2] = {-gamma, 0.0};
+}
+
+std::string formatx(const std::complex<double>& c) {
+    return (c.imag() == 0.0) ? std::format("{}", c.real())
+         : std::format("{}{:+}i", c.real(), c.imag());
+}
+
+std::expected<std::tuple<double, double, double>, std::string>
+arguments(int argc, char* argv[]) {
+    if (argc == 4) {
+        try {
+            double a = std::stod(argv[1]);
+            double b = std::stod(argv[2]);
+            double c = std::stod(argv[3]);
+            return std::tuple{a, b, c};
+        } catch (...) {
+            return std::unexpected("Erreur de saisie !");
+        }
+    }
+    return std::unexpected("Usage : ./fitcs_strobach a b c");
+}
+
+int main(int argc, char* argv[]) {
+    auto result = arguments(argc, argv);
+    if (!result) {
+        std::println("Erreur : {}", result.error());
+        std::exit(EXIT_FAILURE);
+    }
+
+    auto [a, b, c] = result.value();
+    std::array<std::complex<double>, 3> roots;
+
+    try {
+        fitcs(a, b, c, roots);
+
+        if (roots[0].real() == roots[1].real() \
+        && roots[0].real() == roots[2].real()) {
+            std::println("La racine triple est :\nx = {}", formatx(roots[0]));
+        } else {
+            std::println("Les racines sont :");
+            for (std::size_t i = 0; i < roots.size(); ++i)
+                std::println("x{} = {}", i + 1, formatx(roots[i]));
+        }
+    } catch (const std::exception& e) {
+        std::println("Une exception est survenue : {}", e.what());
+        std::exit(EXIT_FAILURE);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+% g++-14 -march=native -std=gnu++23 -pedantic -Wall -O3 strobach.cpp -o strobach
+% % ./fitcs_strobach2 -6 11 -6   
+Les racines sont :
+x1 = 2
+x2 = 3
+x3 = 1
+% ./fitcs_strobach2 0 -7 6     
+Les racines sont :
+x1 = 1
+x2 = 2
+x3 = -3
+% ./fitcs_strobach2 7 11 5
+Les racines sont :
+x1 = -1
+x2 = -1
+x3 = -5
+% ./fitcs_strobach2 -5 8 -4
+Les racines sont :
+x1 = 2
+x2 = 2
+x3 = 1
+% ./fitcs_strobach2 -3 3 -1
+La racine triple est :
+x = 1
+% ./fitcs_strobach2 0 6 -20
+Les racines sont :
+x1 = -1+3i
+x2 = -1-3i
+x3 = 2
+% ./fitcs_strobach2 1 1 -39
+Les racines sont :
+x1 = -2+3i
+x2 = -2-3i
+x3 = 3
+% ./fitcs_strobach2 -6 34 -104
+Les racines sont :
+x1 = 1+5i
+x2 = 1-5i
+x3 = 4
+% ./fitcs_strobach2 1 0 -2    
+Les racines sont :
+x1 = -1+1i
+x2 = -1-1i
+x3 = 1
+\end{lstlisting}
+\begin{lstlisting}
+import sys
+import cmath
+import math
+
+def fitcubic(a: float, b: float, c: float) -> list[complex]:
+    ap = a * a
+    qq = (ap - 3.0 * b) / 9.0
+    rr = (a * (2.0 * ap - 9.0 * b) + 27.0 * c) / 54.0
+    qq3 = qq * qq * qq
+    rr2 = rr * rr
+    inv3 = 1.0 / 3.0
+
+    if rr2 < qq3:
+        theta = cmath.acos(rr / (qq ** 1.5))
+        cos1 = cmath.cos(theta * inv3)
+        gamma = 2.0 * float(cmath.sqrt(qq).real) * float(cos1.real) + a * inv3
+    else:
+        sqrt_val = cmath.sqrt(rr2 - qq3)
+        aa = -math.copysign((abs(rr) + float(sqrt_val.real)) ** inv3, rr)
+        bb = 0.0 if aa == 0.0 else qq / aa
+        gamma = -aa - bb + a * inv3
+
+    ee = 0.0
+    alpha = a - gamma
+    beta = b - alpha * gamma
+    e1 = 0.0
+    e2 = 0.0
+    e3 = c - gamma * beta
+
+    for _ in range(16):
+        eee = ee
+        eeee = eee
+        u1 = alpha - gamma
+        u2 = beta - gamma * u1
+        q1 = e1
+        q2 = e2 - gamma * q1
+        q3 = e3 - gamma * q2
+        delta3 = 0.0 if u2 == 0.0 else q3 / u2
+        delta2 = q2 - u1 * delta3
+        delta1 = q1 - delta3
+
+        alpha += delta1
+        beta += delta2
+        gamma += delta3
+
+        e1 = a - gamma - alpha
+        e2 = b - alpha * gamma - beta
+        e3 = c - gamma * beta
+        ee = e1 * e1 + e2 * e2 + e3 * e3
+
+        if math.isclose(ee, eee) or math.isclose(ee, eeee):
+            break
+
+    cc1 = alpha * 0.5
+    diskr = cc1 * cc1 - beta
+
+    roots = [0j, 0j, 0j]
+    if float(diskr.real) >= 0.0:
+        sqrt_d = cmath.sqrt(diskr)
+        x0 = complex(-cc1 - float(sqrt_d.real), 0.0)
+        x1 = complex(beta / x0.real, 0.0)
+        roots[0] = x0
+        roots[1] = x1
+    else:
+        sqrt_d = cmath.sqrt(-diskr)
+        roots[0] = complex(-cc1, float(sqrt_d.real))
+        roots[1] = complex(-cc1, -float(sqrt_d.real))
+
+    roots[2] = complex(-gamma, 0.0)
+    return roots
+
+def format_complex(c: complex) -> str:
+    real = round(c.real, 6)
+    imag = round(c.imag, 6)
+    if imag == 0:
+        return f"{real}"
+    elif imag < 0:
+        return f"{real}{imag}i"
+    else:
+        return f"{real}+{imag}i"
+
+def main():
+    if len(sys.argv) != 4:
+        print("Usage : python3 script.py a b c")
+        return
+
+    try:
+        a = float(sys.argv[1])
+        b = float(sys.argv[2])
+        c = float(sys.argv[3])
+    except ValueError:
+        print("Erreur : les arguments doivent être des nombres réels.")
+        exit
+
+    try:
+        roots = fitcubic(a, b, c)
+        if roots[0].real == roots[1].real == roots[2].real:
+            print("La racine triple est :")
+            print(f"x = {format_complex(roots[0])}")
+        else:
+            print("Les racines sont :")
+            for i, root in enumerate(roots, 1):
+                print(f"x{i} = {format_complex(root)}")
+    except Exception as e:
+        print(f"Une erreur est survenue : {e}")
+
+if __name__ == "__main__":
+    main()
+
+% python3 strobach.py -6 11 -6
+Les racines sont :
+x1 = 2.0
+x2 = 3.0
+x3 = 1.0
+
+% python3 strobach.py 0 -7 6  
+Les racines sont :
+x1 = 1.0
+x2 = 2.0
+x3 = -3.0
+
+% python3 strobach.py 7 11 5
+Les racines sont :
+x1 = -1.0
+x2 = -1.0
+x3 = -5.0
+
+% python3 strobach.py -5 8 -4   
+Les racines sont :
+x1 = 2.0
+x2 = 2.0
+x3 = 1.0
+
+% python3 strobach.py -3 3 -1
+La racine triple est :
+x = 1.0
+
+% python3 strobach.py 0 6 -20
+Les racines sont :
+x1 = -1.0+3.0i
+x2 = -1.0-3.0i
+x3 = 2.0
+
+% python3 strobach.py 1 1 -39
+Les racines sont :
+x1 = -2.0+3.0i
+x2 = -2.0-3.0i
+x3 = 3.0
+
+% python3 strobach.py -6 34 -104
+Les racines sont :
+x1 = 1.0+5.0i
+x2 = 1.0-5.0i
+x3 = 4.0
+
+% python3 strobach.py 1 0 -2    
+Les racines sont :
+x1 = -1.0+1.0i
+x2 = -1.0-1.0i
+x3 = 1.0
+\end{lstlisting}
+
+
+\end{document}  
