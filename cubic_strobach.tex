@@ -91,7 +91,7 @@
 \emergencystretch=\maxdimen
 \setlength\parindent{0pt}
 
-\title{R\'esolution de l'\'equation cubique par la m\'ethode de Strobach (Python, C++)}
+\title{R\'esolution de l'\'equation cubique par la m\'ethode de Strobach (C++, Python)}
 \author{Peter Philippe}
 %\date{\today}
 
@@ -155,7 +155,7 @@ Ceci permet de mettre-\`a-jour les r\'eels $\alpha$, $\beta$ et $\gamma$ des deu
 \gamma &= \gamma + \delta_3
 \end{split}
 \]
-Compl\'etant ainsi l'ossature de cet algorithme. Toute \'equation de degr\'e impair et \`a coefficients r\'eels poss\`ede au moins une racine r\'eelle\footnote{Ceci peut se prouver avec, entre autres, le Th\'eor\`eme des Valeurs Interm\'ediaires (alias le \textit{TVI}),
+Ceci compl\'ete l'ossature de cet algorithme. Toute \'equation de degr\'e impair et \`a coefficients r\'eels poss\`ede au moins une racine r\'eelle\footnote{Ceci peut se prouver avec, entre autres, le Th\'eor\`eme des Valeurs Interm\'ediaires (alias le \textit{TVI}),
 mais plus simplement en imaginant le fait qu'une valeur positive \'elev\'ee au cube reste positive et qu'une valeur n\'egative \'egalement \'elev\'ee au cube restera n\'egative, la fonction en question devra alors intersecter l'axe des abscisses au moins une fois pour \'etre \'evalu\'ee.},
 celle-ci est estim\'ee par $\gamma = - \hat{x}_{3}$, puis les initialisations suivantes sont effectu\'ees~$\alpha = a - \gamma$, $\beta = b - \gamma\alpha$ et~$e_{3} = c - \gamma\beta$ de mani\`ere \`a annuler $e_{1}$,
 $e_{2}$ et $e_{3}$. Les initialisations suivantes sont d\'eriv\'ees de la m\'ethode de Cardano~ $Q = \frac{a^{2} - 3b}{9}$ et~$R = \frac{2a^3-9ab+27c}{54}$, si la condition~$R^{2}<Q^{3}$ est v\'erifi\'ee on pose~$\Theta=\arccos\left(\frac{R}{Q^{3/2}}\right)$
@@ -183,7 +183,7 @@ $$x_{2}^{(1)} = - \frac{1}{3}\left(a + \text{signe}(a)\sqrt{a^{2}-3b}\right) \qu
 et pour $x_{1}$~:
 $$x_{1}^{(1)} = -a - 2x_{2}^{(1)} \quad \text{et} \quad x_{1}^{(2)} = -a - 2x_{2}^{(2)}$$
 Seulement voil\`a, le discriminant n\'ecessite l'emploi d'une valeur comme $x_{1}^{(1)}\left(x_{2}^{(1)}\right)^{2}$ ce qui n'est pas souhaitable.
-Ceci est contourn\'e par l\'elaboration de deux discriminants~:
+Ceci est contourn\'e par l'\'elaboration de deux discriminants~:
 $$\Delta_{1} = c + \frac{(6b - 2a^{2}x_{2}^{(1)}) - ab}{9} \quad \text{et} \Delta_{1} = c + \frac{(6b - 2a^{2}x_{2}^{(2)}) - ab}{9}\quad$$
 La d\'etection d'une racine triple induit $a=-3x_{1}$, $b=3x_{1}^{2}$, $c=-x_{1}^{3}$, elle est alors d\'eduite de $a$ par~$x_{1} = -\frac{a}{3}$.\\
 
