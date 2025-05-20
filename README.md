@@ -1,4 +1,6 @@
 
+21 mai 2025 : ajout d'un PDF sur la méthode de Gim et Keum en haute précision (C++ et Python).
+
 16 mai 2025 : ajout d'un PDF sur la méthode de Strobach (C++ et Python).
 
 03 mai 2025 : ajout d'un programme de conversion binaire-hexadécimal (Python).
