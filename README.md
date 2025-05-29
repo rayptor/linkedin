@@ -1,4 +1,6 @@
 
+29 mai 2025 : ajout d'un PDF sur les harmoniques sphériques (C++ et Python).
+
 21 mai 2025 : ajout d'un PDF sur la méthode de Gim et Keum en haute précision (C++ et Python).
 
 16 mai 2025 : ajout d'un PDF sur la méthode de Strobach (C++ et Python).
