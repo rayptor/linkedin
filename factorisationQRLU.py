@@ -1,3 +1,5 @@
+# fichier factorisationQRLU.py
+
 import sys
 import numpy as np
 import scipy.linalg as spla
