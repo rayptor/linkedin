@@ -1,4 +1,6 @@
 
+13 juin 2025 : ajout d'un PDF sur les factorisations QR et LU avec PyQT6, Scipy et Numpy (Python).
+
 3 juin 2025 : ajout d'un PDF sur la vectorisation avec Numpy (Python).
 
 29 mai 2025 : ajout d'un PDF sur les harmoniques sphériques (C++ et Python).
