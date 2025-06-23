@@ -1,4 +1,6 @@
 
+23 juin 2025 : ajout d'un PDF sur le glisser-déposer avec PyQT6 (Python).
+
 13 juin 2025 : ajout d'un PDF sur les factorisations QR et LU avec PyQT6, Scipy et Numpy (Python).
 
 3 juin 2025 : ajout d'un PDF sur la vectorisation avec Numpy (Python).
