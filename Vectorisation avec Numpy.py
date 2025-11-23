@@ -80,7 +80,7 @@ def creer_matrice_spd(n: int) -> np.ndarray:
 
 if __name__ == "__main__":
     for n in [100, 200, 400, 800, 1600, 3200]:
-        matrice = creer_matrice_spd(n, False)
+        matrice = creer_matrice_spd(n)
         print(f"Pour une matrice d'ordre {n} :")
         cholesky(matrice)
         cholesky_vectorisee(matrice)
