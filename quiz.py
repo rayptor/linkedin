@@ -79,8 +79,7 @@ def test() -> None:
         equation, solution = generateur()
         print(f"\nQuestion {i}/{nombre_questions} :")
         print(f"Équation : {equation}")
-        debut = time.time()
-        
+        debut = time.time()        
         try:
             reponse_utilisateur: str = input("X = ")
             temps: float = time.time() - debut

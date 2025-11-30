@@ -8,13 +8,11 @@
 
 constexpr int X_MIN = 1;
 constexpr int X_MAX = 10;
-constexpr int QUESTIONS = 7;
-constexpr int TEMPSLIMITE = 7;
+constexpr int NOMBRE_QUESTIONS = 7;
+constexpr int TEMPS_LIMITE = 7;
 
 constexpr size_t zoneTaille = 512;
 constexpr size_t droiteTailleMax = zoneTaille - 80;
-
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(typeof(arr[0])))
 
 typedef struct {
     char equation[zoneTaille];
@@ -178,8 +176,6 @@ static void genererEquationEquilibree(Equation* restrict eq) {
     eq->solution = solutionX;
 }
 
-#pragma GCC diagnostic pop
-
 static inline double calculerTemps(struct timespec debut, struct timespec fin) {
     return (double)(fin.tv_sec - debut.tv_sec) +
            (double)(fin.tv_nsec - debut.tv_nsec) / 1e9;
@@ -221,8 +217,8 @@ static void test(void) {
     afficherSeparateur();
     printf("\t\tGÉNÉRATEUR D'ÉQUATIONS CHRONOMÉTRÉ\n");
     afficherSeparateur();
-    printf("-> %d équations linéaires à résoudre\n", QUESTIONS);
-    printf("-> %d secondes par équation\n", TEMPSLIMITE);
+    printf("-> %d équations linéaires à résoudre\n", NOMBRE_QUESTIONS);
+    printf("-> %d secondes par équation\n", TEMPS_LIMITE);
     printf("-> X est un entier dans [%d;%d]\n", X_MIN, X_MAX);
     afficherSeparateur();
 
@@ -231,7 +227,7 @@ static void test(void) {
     double tempsTotal = 0.0;
     char buffer[zoneTaille];
 
-    for (int i = 1; i <= QUESTIONS; ++i) {
+    for (int i = 1; i <= NOMBRE_QUESTIONS; ++i) {
         Equation eq = {0};
         if (genererBooleenAleatoire()) {
             genererEquationEquilibree(&eq);
@@ -239,7 +235,7 @@ static void test(void) {
             genererPartieGauche(&eq);
         }
 
-        printf("\nQuestion %d/%d :\n", i, QUESTIONS);
+        printf("\nQuestion %d/%d :\n", i, NOMBRE_QUESTIONS);
         printf("Équation : %s\n", eq.equation);
 
         double tempsEcoule;
@@ -257,21 +253,18 @@ static void test(void) {
         if (!estValide) {
             printf("Faux ! (%.1f s)\n", tempsEcoule);
             printf("La bonne réponse était : X = %d\n", eq.solution);
-        } else if (tempsEcoule > TEMPSLIMITE) {
+        } else if (tempsEcoule > TEMPS_LIMITE) {
             if (estCorrect) {
-                // CORRECTION: Correspond à la logique Python "Trop lent mais correct"
                 printf("Trop lent (%.1f s), mais la réponse est correcte !\n", tempsEcoule);
                 ++score;
                 tempsTotal += tempsEcoule;
             } else {
-                // CORRECTION: Correspond à la logique Python "Trop lent et incorrect"
                 printf("Trop lent (%.1f s) !\n", tempsEcoule);
                 printf("La bonne réponse était : X = %d\n", eq.solution);
             }
         } else {
-            // Temps OK
             if (estCorrect) {
-                printf("Correct ! (%.1f s sur %ds)\n", tempsEcoule, TEMPSLIMITE);
+                printf("Correct ! (%.1f s sur %ds)\n", tempsEcoule, TEMPS_LIMITE);
                 ++score;
                 tempsTotal += tempsEcoule;
             } else {
@@ -286,22 +279,22 @@ static void test(void) {
     printf("\t\tRÉSULTAT FINAL\n");
     afficherSeparateur();
 
-    if (score == QUESTIONS) {
+    if (score == NOMBRE_QUESTIONS) {
         printf("Tu as calculé %d bonnes réponses en %.1fs "
                "sur les %d questions.\n",
-               score, tempsTotal, QUESTIONS);
+               score, tempsTotal, NOMBRE_QUESTIONS);
     } else {
         printf("Tu n'as calculé que %d bonnes réponses "
                "sur les %d questions.\n",
-               score, QUESTIONS);
+               score, NOMBRE_QUESTIONS);
     }
 
     const char* message;
-    if (score == QUESTIONS) {
+    if (score == NOMBRE_QUESTIONS) {
         message = "C'est parfait !";
-    } else if (score == QUESTIONS - 1) {
+    } else if (score == NOMBRE_QUESTIONS - 1) {
         message = "C'est très bien !";
-    } else if (score >= QUESTIONS / 2) {
+    } else if (score >= NOMBRE_QUESTIONS / 2) {
         message = "C'est moyen ! Tu peux mieux faire.";
     } else {
         message = "C'est quoi ça ? Retourne donc t'entraîner !";
