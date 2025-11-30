@@ -1,3 +1,4 @@
+30 novembre 2025 : ajout d'un PDF au sujet d'un quiz avec les sources en Python et C.
 
 23 juin 2025 : ajout d'un PDF sur le glisser-déposer avec PyQT6 (Python).
 
