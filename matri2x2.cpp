@@ -1,20 +1,6 @@
 // g++-mp-15 -march=native -O3 -std=c++23 -lm -Wall -Wpedantic -Wextra -Werror -Wfatal-errors matri2x2.cpp -o matri2x2
 // -g3 -fopt-info-optimized=optimized.all -fopt-info-all -fchecking -fmem-report -fstats
 
-// polar : https://ask.sagemath.org/question/76804/polar-decomposition-of-a-matrix/
-// def dunford(A): # SAGE
-//     p=A.charpoly(x);
-//     p=p//(p.gcd(derivative(p)));
-//     q=derivative(p);
-//     An=A;
-//     Ann=An-p(An)*(q(An)^(-1));
-//     while An!=Ann:
-//         Tmp=Ann;
-//         Ann=An-p(An)*q(An)^(-1);
-//         An=Tmp;
-//      return Ann,A-Ann
-// dunford(Matrix(RationalField(),[[2,3,2],[-1,-2,-6],[1,1,5]]))
-
 #include <iostream>
 #include <memory>
 #include <complex>
@@ -35,22 +21,6 @@
 #include <string_view>
 #include <valarray>
 // #include <type_traits>
-
-// ./matri2x2 7 1 -1 5 > OK
-// D 6 0 0 6
-// N 1 1 -1 -1
-
-// ./matri2x2 1 1 0 1 > OK
-// D 1 0 0 1
-// N 0 1 0 0
-
-// ./matrix2x2 1 1 0 2 > OK
-// D 1 1 0 2
-// N 0 0 0 0
-
-// ./matri2x2 2 1 0 3 > OK
-// D 2 1 0 3
-// N 0 0 0 0
 
 
 template<typename T>
