@@ -1,3 +1,5 @@
+18 mai 2026 : ajout d'un PDF sur la suite de Collatz avec les codes sources en C (avec la librairie GMP) et en Python (avec la librairie Bokeh).
+
 21 avril 2026 : ajout d'un PDF proposant différentes décompositions matricielles en C++.
 
 30 novembre 2025 : ajout d'un PDF au sujet d'un quiz avec les sources en Python et C.
