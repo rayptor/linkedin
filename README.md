@@ -1,20 +1,20 @@
-18 mai 2026 : ajout d'un PDF sur la suite de Collatz avec les codes sources en C (avec la librairie GMP) et en Python (avec la librairie Bokeh).
+18 mai 2026 : ajout d'un PDF sur la suite de Collatz (C + GMP, Python + Bokeh).
 
-21 avril 2026 : ajout d'un PDF proposant différentes décompositions matricielles en C++.
+21 avril 2026 : ajout d'un PDF proposant différentes décompositions matricielles (C++).
 
-30 novembre 2025 : ajout d'un PDF au sujet d'un quiz avec les sources en Python et C.
+30 novembre 2025 : ajout d'un PDF au sujet d'un quiz avec les sources (Python et C).
 
 23 juin 2025 : ajout d'un PDF sur le glisser-déposer avec PyQT6 (Python).
 
 13 juin 2025 : ajout d'un PDF sur les factorisations QR et LU avec PyQT6, Scipy et Numpy (Python).
 
-3 juin 2025 : ajout d'un PDF sur la vectorisation avec Numpy (Python).
+3 juin 2025 : ajout d'un PDF sur la vectorisation avec Numpy, exemple avec Cholesky (Python).
 
 29 mai 2025 : ajout d'un PDF sur les harmoniques sphériques (C++ et Python).
 
 21 mai 2025 : ajout d'un PDF sur la méthode de Gim et Keum en haute précision (C++ et Python).
 
-16 mai 2025 : ajout d'un PDF sur la méthode de Strobach (C++ et Python).
+16 mai 2025 : ajout d'un PDF sur la méthode de Strobach pour l'équation cubique (C++ et Python).
 
 03 mai 2025 : ajout d'un programme de conversion binaire-hexadécimal (Python).
 
