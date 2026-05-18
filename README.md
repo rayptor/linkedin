@@ -1,4 +1,4 @@
-18 mai 2026 : ajout d'un PDF sur la suite de Collatz (C + GMP, Python + Bokeh).
+18 mai 2026 : ajout d'un PDF sur la conjecture de Collatz (C + GMP, Python + Bokeh).
 
 21 avril 2026 : ajout d'un PDF proposant différentes décompositions matricielles (C++).
 
