@@ -1,3 +1,5 @@
+9 juin 2026 : ajout d'un PDF sur la coubure locale des surfaces (Python + Sympy)
+
 18 mai 2026 : ajout d'un PDF sur la conjecture de Collatz (C + GMP, Python + Bokeh).
 
 21 avril 2026 : ajout d'un PDF proposant différentes décompositions matricielles (C++).
@@ -10,7 +12,7 @@
 
 3 juin 2025 : ajout d'un PDF sur la vectorisation avec Numpy, exemple avec Cholesky (Python).
 
-29 mai 2025 : ajout d'un PDF sur les harmoniques sphériques (C++ et Python).
+29 mai 2025 : ajout d'un PDF sur les harmoniques sphériques (C++/Boost et Python + Sympy).
 
 21 mai 2025 : ajout d'un PDF sur la méthode de Gim et Keum en haute précision (C++ et Python).
 
