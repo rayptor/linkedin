@@ -24,5 +24,5 @@
 
 ## Authors
 
-- [@rayptor](https://www.github.com/rayptor)
+- [petermaths@protonmail.com]
 
