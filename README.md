@@ -1,4 +1,4 @@
-21 juillet 2026 : ajout d'un PDF sur la convexité (Python + Sympy)
+23 juillet 2026 : ajout d'un PDF sur la convexité (Python + Sympy)
 
 9 juin 2026 : ajout d'un PDF sur la coubure locale des surfaces (Python + Sympy)
 
